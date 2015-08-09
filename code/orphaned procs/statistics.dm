@@ -7,13 +7,13 @@
 			playercount += 1
 	establish_db_connection()
 	if(!dbcon.IsConnected())
-		log_game("SQL ERROR during player polling. Failed to connect.")
+		log_game("SQL ERROR durante la votacion de personaje. Fallo al conectar.")
 	else
 		var/sqltime = time2text(world.realtime, "YYYY-MM-DD hh:mm:ss")
-		var/DBQuery/query = dbcon.NewQuery("INSERT INTO [format_table_name("legacy_population")] (playercount, time) VALUES ([playercount], '[sqltime]')")
+		var/DBQuery/query = dbcon.NewQuery("Insertar en [format_table_name("legacy_population")] (playercount, time) VALUES ([playercount], '[sqltime]')")
 		if(!query.Execute())
 			var/err = query.ErrorMsg()
-			log_game("SQL ERROR during player polling. Error : \[[err]\]\n")
+			log_game("SQL ERROR durante la votacion de personaje. Error : \[[err]\]\n")
 
 
 /proc/sql_poll_admins()
@@ -22,13 +22,13 @@
 	var/admincount = admins.len
 	establish_db_connection()
 	if(!dbcon.IsConnected())
-		log_game("SQL ERROR during admin polling. Failed to connect.")
+		log_game("SQL ERROR durante la votacion de administrador. Fallo al conectar.")
 	else
 		var/sqltime = time2text(world.realtime, "YYYY-MM-DD hh:mm:ss")
-		var/DBQuery/query = dbcon.NewQuery("INSERT INTO [format_table_name("legacy_population")] (admincount, time) VALUES ([admincount], '[sqltime]')")
+		var/DBQuery/query = dbcon.NewQuery("Insertar en [format_table_name("legacy_population")] (admincount, time) VALUES ([admincount], '[sqltime]')")
 		if(!query.Execute())
 			var/err = query.ErrorMsg()
-			log_game("SQL ERROR during admin polling. Error : \[[err]\]\n")
+			log_game("SQL ERROR durante la votacion de administrador. Error : \[[err]\]\n")
 
 /proc/sql_report_round_start()
 	// TODO
@@ -67,12 +67,12 @@
 	//world << "INSERT INTO death (name, byondkey, job, special, pod, tod, laname, lakey, gender, bruteloss, fireloss, brainloss, oxyloss) VALUES ('[sqlname]', '[sqlkey]', '[sqljob]', '[sqlspecial]', '[sqlpod]', '[sqltime]', '[laname]', '[lakey]', '[H.gender]', [H.bruteloss], [H.getFireLoss()], [H.brainloss], [H.getOxyLoss()])"
 	establish_db_connection()
 	if(!dbcon.IsConnected())
-		log_game("SQL ERROR during death reporting. Failed to connect.")
+		log_game("SQL ERROR durante el informe de muerte. Fallo al conectar.")
 	else
-		var/DBQuery/query = dbcon.NewQuery("INSERT INTO [format_table_name("death")] (name, byondkey, job, special, pod, tod, laname, lakey, gender, bruteloss, fireloss, brainloss, oxyloss, coord) VALUES ('[sqlname]', '[sqlkey]', '[sqljob]', '[sqlspecial]', '[sqlpod]', '[sqltime]', '[laname]', '[lakey]', '[H.gender]', [H.getBruteLoss()], [H.getFireLoss()], [H.brainloss], [H.getOxyLoss()], '[coord]')")
+		var/DBQuery/query = dbcon.NewQuery("Insertar en [format_table_name("death")] (name, byondkey, job, special, pod, tod, laname, lakey, gender, bruteloss, fireloss, brainloss, oxyloss, coord) VALUES ('[sqlname]', '[sqlkey]', '[sqljob]', '[sqlspecial]', '[sqlpod]', '[sqltime]', '[laname]', '[lakey]', '[H.gender]', [H.getBruteLoss()], [H.getFireLoss()], [H.brainloss], [H.getOxyLoss()], '[coord]')")
 		if(!query.Execute())
 			var/err = query.ErrorMsg()
-			log_game("SQL ERROR during death reporting. Error : \[[err]\]\n")
+			log_game("SQL ERROR durante el informe de muerte. Error : \[[err]\]\n")
 
 
 /proc/sql_report_cyborg_death(mob/living/silicon/robot/H)
@@ -102,12 +102,12 @@
 	//world << "INSERT INTO death (name, byondkey, job, special, pod, tod, laname, lakey, gender, bruteloss, fireloss, brainloss, oxyloss) VALUES ('[sqlname]', '[sqlkey]', '[sqljob]', '[sqlspecial]', '[sqlpod]', '[sqltime]', '[laname]', '[lakey]', '[H.gender]', [H.bruteloss], [H.getFireLoss()], [H.brainloss], [H.getOxyLoss()])"
 	establish_db_connection()
 	if(!dbcon.IsConnected())
-		log_game("SQL ERROR during death reporting. Failed to connect.")
+		log_game("SQL ERROR durante el informe de muerte. Fallo al conectar.")
 	else
 		var/DBQuery/query = dbcon.NewQuery("INSERT INTO [format_table_name("death")] (name, byondkey, job, special, pod, tod, laname, lakey, gender, bruteloss, fireloss, brainloss, oxyloss, coord) VALUES ('[sqlname]', '[sqlkey]', '[sqljob]', '[sqlspecial]', '[sqlpod]', '[sqltime]', '[laname]', '[lakey]', '[H.gender]', [H.getBruteLoss()], [H.getFireLoss()], [H.brainloss], [H.getOxyLoss()], '[coord]')")
 		if(!query.Execute())
 			var/err = query.ErrorMsg()
-			log_game("SQL ERROR during death reporting. Error : \[[err]\]\n")
+			log_game("SQL ERROR durante el informe de muerte. Error : \[[err]\]\n")
 
 
 
@@ -115,22 +115,22 @@
 //This proc is used for feedback. It is executed at round end.
 /proc/sql_commit_feedback()
 	if(!blackbox)
-		log_game("Round ended without a blackbox recorder. No feedback was sent to the database.")
+		log_game("La ronda termino sin ser grabada en la blackbox. Sin feedback fue enviado a la base de datos.")
 		return
 
 	//content is a list of lists. Each item in the list is a list with two fields, a variable name and a value. Items MUST only have these two values.
 	var/list/datum/feedback_variable/content = blackbox.get_round_feedback()
 
 	if(!content)
-		log_game("Round ended without any feedback being generated. No feedback was sent to the database.")
+		log_game("La ronda terminó sin que un feedback fuera generado. Sin feedback fue enviado a la base de datos.")
 		return
 
 	establish_db_connection()
 	if(!dbcon.IsConnected())
-		log_game("SQL ERROR during feedback reporting. Failed to connect.")
+		log_game("SQL ERROR durante el informe de feedback . fallo al conectar.")
 	else
 
-		var/DBQuery/max_query = dbcon.NewQuery("SELECT MAX(roundid) AS max_round_id FROM [format_table_name("feedback")]")
+		var/DBQuery/max_query = dbcon.NewQuery("Selecciona el maximo(roundid) como max_round_id desde [format_table_name("feedback")]")
 		max_query.Execute()
 
 		var/newroundid
@@ -150,7 +150,7 @@
 			var/variable = item.get_variable()
 			var/value = item.get_value()
 
-			var/DBQuery/query = dbcon.NewQuery("INSERT INTO [format_table_name("feedback")] (id, roundid, time, variable, value) VALUES (null, [newroundid], Now(), '[variable]', '[value]')")
+			var/DBQuery/query = dbcon.NewQuery("Insertar en [format_table_name("feedback")] (id, roundid, time, variable, value) VALUES (null, [newroundid], Now(), '[variable]', '[value]')")
 			if(!query.Execute())
 				var/err = query.ErrorMsg()
-				log_game("SQL ERROR during feedback reporting. Error : \[[err]\]\n")
+				log_game("SQL ERROR durante el informe de feedback. Error : \[[err]\]\n")
