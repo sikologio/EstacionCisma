@@ -55,7 +55,7 @@
 		if(!setup_database_connection())
 			world.log << "El servidor no ha podido establecer conexión con la base de datos."
 		else
-			world.log << "La base de datos del servidor ha sido conectada."
+			world.log << "El servidor ha conectado con la base de datos."
 
 
 	data_core = new /datum/datacore()
@@ -152,7 +152,7 @@
 		return
 	feedback_set_details("[feedback_c]","[feedback_r]")
 	log_game("<span class='boldannounce'>Reiniciando mundo. [reason]</span>")
-	kick_clients_in_lobby("<span class='boldannounce'>La ronda llegó a su fin con usted en el lobby.</span>", 1) //second parameter ensures only afk clients are kicked
+	kick_clients_in_lobby("<span class='boldannounce'>La ronda ha terminado contigo en el lobby.</span>", 1) //second parameter ensures only afk clients are kicked
 	#ifdef dellogging
 	var/log = file("data/logs/del.log")
 	log << time2text(world.realtime)
