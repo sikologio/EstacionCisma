@@ -75,14 +75,14 @@
 		computerid = bancid
 		ip = banip
 
-	var/DBQuery/query = dbcon.NewQuery("SELECT id FROM [format_table_name("player")] WHERE ckey = '[ckey]'")
+	var/DBQuery/query = dbcon.NewQuery("Selecciona la ID desde [format_table_name("player")] donde ckey = '[ckey]'")
 	query.Execute()
 	var/validckey = 0
 	if(query.NextRow())
 		validckey = 1
 	if(!validckey)
 		if(!banned_mob || (banned_mob && !IsGuestKey(banned_mob.key)))
-			message_admins("<font color='red'>[key_name_admin(usr)] attempted to ban [ckey], but [ckey] has not been seen yet. Please only ban actual players.</font>",1)
+			message_admins("<font color='red'>[key_name_admin(usr)] Intento banear a [ckey], pero [ckey] no esta conectado todavia. por favor banea a los usuarios que esten online.</font>",1)
 			return
 
 	var/a_ckey
@@ -96,7 +96,7 @@
 
 	if(blockselfban)
 		if(a_ckey == ckey)
-			usr << "<span class='danger'>You cannot apply this ban type on yourself.</span>"
+			usr << "<span class='danger'>No puedes banearte a ti mismo.</span>"
 			return
 
 	var/who
@@ -116,22 +116,22 @@
 	reason = sanitizeSQL(reason)
 
 	if(maxadminbancheck)
-		var/DBQuery/adm_query = dbcon.NewQuery("SELECT count(id) AS num FROM [format_table_name("ban")] WHERE (a_ckey = '[a_ckey]') AND (bantype = 'ADMIN_PERMABAN'  OR (bantype = 'ADMIN_TEMPBAN' AND expiration_time > Now())) AND isnull(unbanned)")
+		var/DBQuery/adm_query = dbcon.NewQuery("Selecciona una (id) como numero desde [format_table_name("ban")] donde (a_ckey = '[a_ckey]') y (bantype = 'ADMIN_PERMABAN'  o (bantype = 'ADMIN_TEMPBAN' y expiration_time > Ahora())) y isnull(unbanned)")
 		adm_query.Execute()
 		if(adm_query.NextRow())
 			var/adm_bans = text2num(adm_query.item[1])
 			if(adm_bans >= MAX_ADMIN_BANS_PER_ADMIN)
-				usr << "<span class='danger'>You already logged [MAX_ADMIN_BANS_PER_ADMIN] admin ban(s) or more. Do not abuse this function!</span>"
+				usr << "<span class='danger'>Acabas de registrar [MAX_ADMIN_BANS_PER_ADMIN] baneos o mas. ¡No abuses!</span>"
 				return
 
 	var/sql = "INSERT INTO [format_table_name("ban")] (`id`,`bantime`,`serverip`,`bantype`,`reason`,`job`,`duration`,`rounds`,`expiration_time`,`ckey`,`computerid`,`ip`,`a_ckey`,`a_computerid`,`a_ip`,`who`,`adminwho`,`edits`,`unbanned`,`unbanned_datetime`,`unbanned_ckey`,`unbanned_computerid`,`unbanned_ip`) VALUES (null, Now(), '[serverip]', '[bantype_str]', '[reason]', '[job]', [(duration)?"[duration]":"0"], [(rounds)?"[rounds]":"0"], Now() + INTERVAL [(duration>0) ? duration : 0] MINUTE, '[ckey]', '[computerid]', '[ip]', '[a_ckey]', '[a_computerid]', '[a_ip]', '[who]', '[adminwho]', '', null, null, null, null, null)"
 	var/DBQuery/query_insert = dbcon.NewQuery(sql)
 	query_insert.Execute()
-	usr << "<span class='adminnotice'>Ban saved to database.</span>"
-	message_admins("[key_name_admin(usr)] has added a [bantype_str] for [ckey] [(job)?"([job])":""] [(duration > 0)?"([duration] minutes)":""] with the reason: \"[reason]\" to the ban database.",1)
+			usr << "<span class='adminnotice'>Ban guardado en la base de datos.</span>"
+	message_admins("[key_name_admin(usr)] Ha sido añadido a [bantype_str] por [ckey] [(job)?"([job])":""] [(duration > 0)?"([duration] minutes)":""] con la razon: \"[reason]\" A la base de datos de ban.",1)
 
 	if(announceinirc)
-		send2irc("BAN ALERT","[a_ckey] applied a [bantype_str] on [ckey]")
+		send2irc("BAN ALERT","[a_ckey] aplico una [bantype_str] en [ckey]")
 
 	if(kickbannedckey)
 		if(banned_mob && banned_mob.client && banned_mob.client.ckey == banckey)
@@ -174,11 +174,11 @@
 
 	var/bantype_sql
 	if(bantype_str == "ANY")
-		bantype_sql = "(bantype = 'PERMABAN' OR (bantype = 'TEMPBAN' AND expiration_time > Now() ) )"
+		bantype_sql = "(bantype = 'PERMABAN' o (bantype = 'TEMPBAN' y expiration_time > Ahora() ) )"
 	else
 		bantype_sql = "bantype = '[bantype_str]'"
 
-	var/sql = "SELECT id FROM [format_table_name("ban")] WHERE ckey = '[ckey]' AND [bantype_sql] AND (unbanned is null OR unbanned = false)"
+	var/sql = "Selecciona ID desde [format_table_name("ban")] donde ckey = '[ckey]' y [bantype_sql] y (unbanned is null OR unbanned = false)"
 	if(job)
 		sql += " AND job = '[job]'"
 
@@ -196,17 +196,17 @@
 		ban_number++;
 
 	if(ban_number == 0)
-		usr << "<span class='danger'>Database update failed due to no bans fitting the search criteria. If this is not a legacy ban you should contact the database admin.</span>"
+		usr << "<span class='danger'>La actualizacion de la base de datos ha fallado debido a que no hay Ban que cumplan los criterios de busqueda. contacte con el administrador de la base de datos.</span>"
 		return
 
 	if(ban_number > 1)
-		usr << "<span class='danger'>Database update failed due to multiple bans fitting the search criteria. Note down the ckey, job and current time and contact the database admin.</span>"
+		usr << "<span class='danger'>La actualizacion de la base de datos ha fallado debido a que no hay Bans que cumplan los criterios de busqueda. Anota la  ckey, trabajo y el tiempo y contacte con el administrador de la base de datos.</span>"
 		return
 
 	if(istext(ban_id))
 		ban_id = text2num(ban_id)
 	if(!isnum(ban_id))
-		usr << "<span class='danger'>Database update failed due to a ban ID mismatch. Contact the database admin.</span>"
+		usr << "<span class='danger'>La actualizacion de la base de datos ha fallado debido a un error en la ID del Ban. Contacte con el administrador de la base de datos.</span>"
 		return
 
 	DB_ban_unban_by_id(ban_id)
@@ -219,7 +219,7 @@
 		usr << "Cancelled"
 		return
 
-	var/DBQuery/query = dbcon.NewQuery("SELECT ckey, duration, reason FROM [format_table_name("ban")] WHERE id = [banid]")
+	var/DBQuery/query = dbcon.NewQuery("Selecciona ckey, duracion, razon desde [format_table_name("ban")] Donde ID = [banid]")
 	query.Execute()
 
 	var/eckey = usr.ckey	//Editing admin ckey
@@ -232,7 +232,7 @@
 		duration = query.item[2]
 		reason = query.item[3]
 	else
-		usr << "Invalid ban id. Contact the database admin"
+		usr << "ID invalida. Contacta al administrador de la base de datos."
 		return
 
 	reason = sanitizeSQL(reason)
@@ -241,41 +241,41 @@
 	switch(param)
 		if("reason")
 			if(!value)
-				value = input("Insert the new reason for [pckey]'s ban", "New Reason", "[reason]", null) as null|text
+				value = input("Inserta la razon [pckey]'s ban", "Nueva razon", "[reason]", null) as null|text
 				value = sanitizeSQL(value)
 				if(!value)
-					usr << "Cancelled"
+					usr << "Cancelado."
 					return
 
-			var/DBQuery/update_query = dbcon.NewQuery("UPDATE [format_table_name("ban")] SET reason = '[value]', edits = CONCAT(edits,'- [eckey] changed ban reason from <cite><b>\\\"[reason]\\\"</b></cite> to <cite><b>\\\"[value]\\\"</b></cite><BR>') WHERE id = [banid]")
+			var/DBQuery/update_query = dbcon.NewQuery("Actualiza [format_table_name("ban")] escribe una razon = '[value]', edits = CONCAT(edits,'- [eckey] Cambio la razon del ban por <cite><b>\\\"[reason]\\\"</b></cite> to <cite><b>\\\"[value]\\\"</b></cite><BR>') donde ID = [banid]")
 			update_query.Execute()
-			message_admins("[key_name_admin(usr)] has edited a ban for [pckey]'s reason from [reason] to [value]",1)
+			message_admins("[key_name_admin(usr)] Ha editado un ban por [pckey]'s razon desde [reason] a [value]",1)
 		if("duration")
 			if(!value)
-				value = input("Insert the new duration (in minutes) for [pckey]'s ban", "New Duration", "[duration]", null) as null|num
+				value = input("Inserta la nueva duracion (en minutos) para [pckey]'s ban", "Nueva duracion", "[duration]", null) as null|num
 				if(!isnum(value) || !value)
-					usr << "Cancelled"
+					usr << "Cancelado."
 					return
 
-			var/DBQuery/update_query = dbcon.NewQuery("UPDATE [format_table_name("ban")] SET duration = [value], edits = CONCAT(edits,'- [eckey] changed ban duration from [duration] to [value]<br>'), expiration_time = DATE_ADD(bantime, INTERVAL [value] MINUTE) WHERE id = [banid]")
-			message_admins("[key_name_admin(usr)] has edited a ban for [pckey]'s duration from [duration] to [value]",1)
+			var/DBQuery/update_query = dbcon.NewQuery("Actualiza [format_table_name("ban")] escribe duracion = [value], edits = CONCAT(edits,'- [eckey] Cambio la duracion del ban desde [duration] a [value]<br>'), expiration_time = DATE_ADD(bantime, INTERVAL [value] MINUTE) donde ID = [banid]")
+			message_admins("[key_name_admin(usr)] Ha editado un ban [pckey]'s duracion desde [duration] a [value]",1)
 			update_query.Execute()
 		if("unban")
-			if(alert("Unban [pckey]?", "Unban?", "Yes", "No") == "Yes")
+			if(alert("Desbanear [pckey]?", "Desbanear?", "Si", "No") == "Yes")
 				DB_ban_unban_by_id(banid)
 				return
 			else
-				usr << "Cancelled"
+				usr << "Cancelado"
 				return
 		else
-			usr << "Cancelled"
+			usr << "Cancelado"
 			return
 
 /datum/admins/proc/DB_ban_unban_by_id(id)
 
 	if(!check_rights(R_BAN))	return
 
-	var/sql = "SELECT ckey FROM [format_table_name("ban")] WHERE id = [id]"
+	var/sql = "Selecciona ckey desde [format_table_name("ban")] donde ID = [id]"
 
 	establish_db_connection()
 	if(!dbcon.IsConnected())
@@ -291,11 +291,11 @@
 		ban_number++;
 
 	if(ban_number == 0)
-		usr << "<span class='danger'>Database update failed due to a ban id not being present in the database.</span>"
+		usr << "<span class='danger'>Actualizacion de la base de datos ha fallado debido a que esa ID no existe en la base de datos.</span>"
 		return
 
 	if(ban_number > 1)
-		usr << "<span class='danger'>Database update failed due to multiple bans having the same ID. Contact the database admin.</span>"
+		usr << "<span class='danger'>Actualizacion de la base de datos ha fallado debido a que multiples ban tienen el mismo ID. Contacta al administrador de la base de datos.</span>"
 		return
 
 	if(!src.owner || !istype(src.owner, /client))
@@ -305,8 +305,8 @@
 	var/unban_computerid = src.owner:computer_id
 	var/unban_ip = src.owner:address
 
-	var/sql_update = "UPDATE [format_table_name("ban")] SET unbanned = 1, unbanned_datetime = Now(), unbanned_ckey = '[unban_ckey]', unbanned_computerid = '[unban_computerid]', unbanned_ip = '[unban_ip]' WHERE id = [id]"
-	message_admins("[key_name_admin(usr)] has lifted [pckey]'s ban.",1)
+	var/sql_update = "Actualiza [format_table_name("ban")] SET unbanned = 1, unbanned_datetime = Now(), unbanned_ckey = '[unban_ckey]', unbanned_computerid = '[unban_computerid]', unbanned_ip = '[unban_ip]' donde ID = [id]"
+	message_admins("[key_name_admin(usr)] ha quitado [pckey]'s ban.",1)
 
 	var/DBQuery/query_update = dbcon.NewQuery(sql_update)
 	query_update.Execute()
@@ -314,8 +314,8 @@
 
 /client/proc/DB_ban_panel()
 	set category = "Admin"
-	set name = "Banning Panel"
-	set desc = "Edit admin permissions"
+	set name = "Panel de baneos"
+	set desc = "Editar permisos de administrador"
 
 	if(!holder)
 		return
@@ -331,18 +331,18 @@
 
 	establish_db_connection()
 	if(!dbcon.IsConnected())
-		usr << "<span class='danger'>Failed to establish database connection.</span>"
+		usr << "<span class='danger'Fallo al conectar con la base de datos.</span>"
 		return
 
 	var/output = "<div align='center'><table width='90%'><tr>"
 
 	output += "<td width='35%' align='center'>"
-	output += "<h1>Banning panel</h1>"
+	output += "<h1>Panel de baneos</h1>"
 	output += "</td>"
 
 	output += "<td width='65%' align='center' bgcolor='#f9f9f9'>"
 
-	output += "<form method='GET' action='?src=\ref[src]'><b>Add custom ban:</b> (ONLY use this if you can't ban through any other method)"
+	output += "<form method='GET' action='?src=\ref[src]'><b>Añadir ban personalizado:</b> (Usalo SOLO cuando no puedas banear de otra forma.)"
 	output += "<input type='hidden' name='src' value='\ref[src]'>"
 	output += "<table width='100%'><tr>"
 	output += "<td><b>Ban type:</b><select name='dbbanaddtype'>"
@@ -382,7 +382,7 @@
 	output += "<b>Admin ckey:</b> <input type='text' name='dbsearchadmin' value='[adminckey]'>"
 	output += "<input type='submit' value='search'>"
 	output += "</form>"
-	output += "Please note that all jobban bans or unbans are in-effect the following round."
+	output += "Por favor anota todos los jobbans, bans o desbans que se han hecho en la ultima ronda."
 
 	if(adminckey || playerckey)
 
@@ -438,17 +438,17 @@
 				if("PERMABAN")
 					typedesc = "<font color='red'><b>PERMABAN</b></font>"
 				if("TEMPBAN")
-					typedesc = "<b>TEMPBAN</b><br><font size='2'>([duration] minutes [(unbanned) ? "" : "(<a href=\"byond://?src=\ref[src];dbbanedit=duration;dbbanid=[banid]\">Edit</a>))"]<br>Expires [expiration]</font>"
+					typedesc = "<b>TEMPBAN</b><br><font size='2'>([duration] minutos [(unbanned) ? "" : "(<a href=\"byond://?src=\ref[src];dbbanedit=duration;dbbanid=[banid]\">Edit</a>))"]<br>Expires [expiration]</font>"
 				if("JOB_PERMABAN")
 					typedesc = "<b>JOBBAN</b><br><font size='2'>([job])"
 				if("JOB_TEMPBAN")
-					typedesc = "<b>TEMP JOBBAN</b><br><font size='2'>([job])<br>([duration] minutes<br>Expires [expiration]"
+					typedesc = "<b>TEMP JOBBAN</b><br><font size='2'>([job])<br>([duration] minutos<br>Expires [expiration]"
 				if("APPEARANCE_PERMABAN")
 					typedesc = "<b>IDENTITY PERMABAN</b>"
 				if("ADMIN_PERMABAN")
 					typedesc = "<b>ADMIN PERMABAN</b>"
 				if("ADMIN_TEMPBAN")
-					typedesc = "<b>ADMIN TEMPBAN</b><br><font size='2'>([duration] minutes [(unbanned) ? "" : "(<a href=\"byond://?src=\ref[src];dbbanedit=duration;dbbanid=[banid]\">Edit</a>))"]<br>Expires [expiration]</font>"
+					typedesc = "<b>ADMIN TEMPBAN</b><br><font size='2'>([duration] minutos [(unbanned) ? "" : "(<a href=\"byond://?src=\ref[src];dbbanedit=duration;dbbanid=[banid]\">Edit</a>))"]<br>Expires [expiration]</font>"
 
 			output += "<tr bgcolor='[dcolor]'>"
 			output += "<td align='center'>[typedesc]</td>"
@@ -458,7 +458,7 @@
 			output += "<td align='center'>[(unbanned) ? "" : "<b><a href=\"byond://?src=\ref[src];dbbanedit=unban;dbbanid=[banid]\">Unban</a></b>"]</td>"
 			output += "</tr>"
 			output += "<tr bgcolor='[lcolor]'>"
-			output += "<td align='center' colspan='5'><b>Reason: [(unbanned) ? "" : "(<a href=\"byond://?src=\ref[src];dbbanedit=reason;dbbanid=[banid]\">Edit</a>)"]</b> <cite>\"[reason]\"</cite></td>"
+			output += "<td align='center' colspan='5'><b>Razon: [(unbanned) ? "" : "(<a href=\"byond://?src=\ref[src];dbbanedit=reason;dbbanid=[banid]\">Edit</a>)"]</b> <cite>\"[reason]\"</cite></td>"
 			output += "</tr>"
 			if(edits)
 				output += "<tr bgcolor='[dcolor]'>"
@@ -469,7 +469,7 @@
 				output += "</tr>"
 			if(unbanned)
 				output += "<tr bgcolor='[dcolor]'>"
-				output += "<td align='center' colspan='5' bgcolor=''><b>UNBANNED by admin [unbanckey] on [unbantime]</b></td>"
+				output += "<td align='center' colspan='5' bgcolor=''><b>Desbaneado por el admin [unbanckey] en [unbantime]</b></td>"
 				output += "</tr>"
 			output += "<tr>"
 			output += "<td colspan='5' bgcolor='white'>&nbsp</td>"
