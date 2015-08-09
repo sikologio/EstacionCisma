@@ -53,9 +53,9 @@
 
 	if(config.sql_enabled)
 		if(!setup_database_connection())
-			world.log << "Your server failed to establish a connection with the database."
+			world.log << "El servidor no ha podido establecer conexión con la base de datos."
 		else
-			world.log << "Database connection established."
+			world.log << "La base de datos del servidor ha sido conectada."
 
 
 	data_core = new /datum/datacore()
@@ -141,18 +141,18 @@
 	else
 		delay = ticker.restart_timeout
 	if(ticker.delay_end)
-		world << "<span class='boldannounce'>An admin has delayed the round end.</span>"
+		world << "<span class='boldannounce'>Un administrador ha retrasado el final de la ronda.</span>"
 		return
 	world << "<span class='boldannounce'>Rebooting World in [delay/10] [delay > 10 ? "seconds" : "second"]. [reason]</span>"
 	sleep(delay)
 	if(blackbox)
 		blackbox.save_all_data_to_sql()
 	if(ticker.delay_end)
-		world << "<span class='boldannounce'>Reboot was cancelled by an admin.</span>"
+		world << "<span class='boldannounce'>El administrador canceló el reinicio.</span>"
 		return
 	feedback_set_details("[feedback_c]","[feedback_r]")
-	log_game("<span class='boldannounce'>Rebooting World. [reason]</span>")
-	kick_clients_in_lobby("<span class='boldannounce'>The round came to an end with you in the lobby.</span>", 1) //second parameter ensures only afk clients are kicked
+	log_game("<span class='boldannounce'>Reiniciando mundo. [reason]</span>")
+	kick_clients_in_lobby("<span class='boldannounce'>La ronda llegó a su fin con usted en el lobby.</span>", 1) //second parameter ensures only afk clients are kicked
 	#ifdef dellogging
 	var/log = file("data/logs/del.log")
 	log << time2text(world.realtime)
@@ -179,7 +179,7 @@
 	if(Lines.len)
 		if(Lines[1])
 			master_mode = Lines[1]
-			diary << "Saved mode is '[master_mode]'"
+			diary << "El modo guardado es '[master_mode]'"
 
 /world/proc/save_mode(the_mode)
 	var/F = file("data/mode.txt")
