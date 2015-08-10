@@ -3,7 +3,7 @@
 	set desc = "Area to jump to"
 	set category = "Admin"
 	if(!src.holder)
-		src << "Only administrators may use this command."
+		src << "Solo los administradores pueden usar este comando."
 		return
 
 	if(!A)
@@ -29,11 +29,11 @@
 	set name = "Jump to Turf"
 	set category = "Admin"
 	if(!src.holder)
-		src << "Only administrators may use this command."
+		src << "Solo administradores pueden usar este comando."
 		return
 
-	log_admin("[key_name(usr)] jumped to [T.x],[T.y],[T.z] in [T.loc]")
-	message_admins("[key_name_admin(usr)] jumped to [T.x],[T.y],[T.z] in [T.loc]")
+	log_admin("[key_name(usr)] se teletransporto a [T.x],[T.y],[T.z] in [T.loc]")
+	message_admins("[key_name_admin(usr)] se teletransporto a [T.x],[T.y],[T.z] in [T.loc]")
 	usr.loc = T
 	feedback_add_details("admin_verb","JT") //If you are copy-pasting this, ensure the 2nd parameter is unique to the new proc!
 	return
@@ -43,7 +43,7 @@
 	set name = "Jump to Mob"
 
 	if(!src.holder)
-		src << "Only administrators may use this command."
+		src << "Solo administradores pueden usar este comando."
 		return
 
 	log_admin("[key_name(usr)] jumped to [key_name(M)]")
