@@ -10,15 +10,15 @@
 	set category = "Special Verbs"
 	if(M.client)
 		if(M.client.buildmode)
-			log_admin("[key_name(usr)] has left build mode.")
+			log_admin("[key_name(usr)] ha dejado de construir.")
 			M.client.buildmode = 0
 			M.client.show_popup_menus = 1
 			for(var/obj/effect/bmode/buildholder/H)
 				if(H.cl == M.client)
 					qdel(H)
 		else
-			message_admins("[key_name(usr)] has entered build mode.")
-			log_admin("[key_name(usr)] has entered build mode.")
+			message_admins("[key_name(usr)] ha empezado a construir.")
+			log_admin("[key_name(usr)] ha empezado a construir.")
 			M.client.buildmode = 1
 			M.client.show_popup_menus = 0
 
