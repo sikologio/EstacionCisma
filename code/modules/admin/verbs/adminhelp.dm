@@ -74,7 +74,7 @@
 
 	//handle muting and automuting
 	if(prefs.muted & MUTE_ADMINHELP)
-		src << "<span class='danger'>Error: Admin-PM: You cannot send adminhelps (Muted).</span>"
+		src << "<span class='danger'>Error: Admin-PM: No puedes mandar adminhelps (Muted).</span>"
 		return
 	if(src.handle_spam_prevention(msg,MUTE_ADMINHELP))
 		return
@@ -138,7 +138,7 @@
 		if(!admin_number_afk && !admin_number_ignored)
 			send2irc(source, "[msg] - No admins online")
 		else
-			send2irc(source, "[msg] - All admins AFK ([admin_number_afk]/[admin_number_total]) or skipped ([admin_number_ignored]/[admin_number_total])")
+			send2irc(source, "[msg] - todos los admins AFK ([admin_number_afk]/[admin_number_total]) or skipped ([admin_number_ignored]/[admin_number_total])")
 	return admin_number_present
 
 /proc/send2irc(msg,msg2)
