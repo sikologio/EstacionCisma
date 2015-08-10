@@ -96,7 +96,7 @@
 
 	if(blockselfban)
 		if(a_ckey == ckey)
-			usr << "<span class='danger'>You cannot apply this ban type on yourself.</span>"
+			usr << "<span class='danger'>No te puedes banear a ti mismo.</span>"
 			return
 
 	var/who
@@ -121,13 +121,13 @@
 		if(adm_query.NextRow())
 			var/adm_bans = text2num(adm_query.item[1])
 			if(adm_bans >= MAX_ADMIN_BANS_PER_ADMIN)
-				usr << "<span class='danger'>You already logged [MAX_ADMIN_BANS_PER_ADMIN] admin ban(s) or more. Do not abuse this function!</span>"
+				usr << "<span class='danger'>Ya has registrado [MAX_ADMIN_BANS_PER_ADMIN] admin ban(s) o mas. No abuses!</span>"
 				return
 
 	var/sql = "INSERT INTO [format_table_name("ban")] (`id`,`bantime`,`serverip`,`bantype`,`reason`,`job`,`duration`,`rounds`,`expiration_time`,`ckey`,`computerid`,`ip`,`a_ckey`,`a_computerid`,`a_ip`,`who`,`adminwho`,`edits`,`unbanned`,`unbanned_datetime`,`unbanned_ckey`,`unbanned_computerid`,`unbanned_ip`) VALUES (null, Now(), '[serverip]', '[bantype_str]', '[reason]', '[job]', [(duration)?"[duration]":"0"], [(rounds)?"[rounds]":"0"], Now() + INTERVAL [(duration>0) ? duration : 0] MINUTE, '[ckey]', '[computerid]', '[ip]', '[a_ckey]', '[a_computerid]', '[a_ip]', '[who]', '[adminwho]', '', null, null, null, null, null)"
 	var/DBQuery/query_insert = dbcon.NewQuery(sql)
 	query_insert.Execute()
-	usr << "<span class='adminnotice'>Ban saved to database.</span>"
+	usr << "<span class='adminnotice'>Ban guardado en la base de datos.</span>"
 	message_admins("[key_name_admin(usr)] has added a [bantype_str] for [ckey] [(job)?"([job])":""] [(duration > 0)?"([duration] minutes)":""] with the reason: \"[reason]\" to the ban database.",1)
 
 	if(announceinirc)
@@ -196,17 +196,17 @@
 		ban_number++;
 
 	if(ban_number == 0)
-		usr << "<span class='danger'>Database update failed due to no bans fitting the search criteria. If this is not a legacy ban you should contact the database admin.</span>"
+		usr << "<span class='danger'>La actualizacion de la base de datos ha fallado debido a que no se encuentra el ban que busca.</span>"
 		return
 
 	if(ban_number > 1)
-		usr << "<span class='danger'>Database update failed due to multiple bans fitting the search criteria. Note down the ckey, job and current time and contact the database admin.</span>"
+		usr << "<span class='danger'>La actualizacion de la base de datos ha fallado debido a que no se encuentran multiples ban quee busca. Anota el ckey, job y el tiempo y pregunta a la administracion.</span>"
 		return
 
 	if(istext(ban_id))
 		ban_id = text2num(ban_id)
 	if(!isnum(ban_id))
-		usr << "<span class='danger'>Database update failed due to a ban ID mismatch. Contact the database admin.</span>"
+		usr << "<span class='danger'>Actualizacion de la base de datos ha fallado por que no se encuentra esa ID. Contacta con un administrador.</span>"
 		return
 
 	DB_ban_unban_by_id(ban_id)
@@ -232,7 +232,7 @@
 		duration = query.item[2]
 		reason = query.item[3]
 	else
-		usr << "Invalid ban id. Contact the database admin"
+		usr << "ID invalida. Contacta con un administrador."
 		return
 
 	reason = sanitizeSQL(reason)
@@ -291,11 +291,11 @@
 		ban_number++;
 
 	if(ban_number == 0)
-		usr << "<span class='danger'>Database update failed due to a ban id not being present in the database.</span>"
+		usr << "<span class='danger'La actualizacion de la base de datos ha fallado debido a que no existe esa ID.</span>"
 		return
 
 	if(ban_number > 1)
-		usr << "<span class='danger'>Database update failed due to multiple bans having the same ID. Contact the database admin.</span>"
+		usr << "<span class='danger'>La actualizacion de la base de datos ha fallado debido a que hay multiples ban para esa ID . Contacta con un administrador.</span>"
 		return
 
 	if(!src.owner || !istype(src.owner, /client))
@@ -382,7 +382,7 @@
 	output += "<b>Admin ckey:</b> <input type='text' name='dbsearchadmin' value='[adminckey]'>"
 	output += "<input type='submit' value='search'>"
 	output += "</form>"
-	output += "Please note that all jobban bans or unbans are in-effect the following round."
+	output += "Por favor anota todos los jobbans, bans o permaban que se realicen en la siguiente ronda."
 
 	if(adminckey || playerckey)
 
