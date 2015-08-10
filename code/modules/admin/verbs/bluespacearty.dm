@@ -11,7 +11,7 @@
 		usr << "This can only be used on instances of type /mob/living"
 		return
 
-	if(alert(usr, "Are you sure you wish to hit [key_name(target)] with Blue Space Artillery?",  "Confirm Firing?" , "Yes" , "No") != "Yes")
+	if(alert(usr, "Estas seguro de querer disparar a [key_name(target)] Con la artilleria Blue Space?",  "Confirm Firing?" , "Yes" , "No") != "Yes")
 		return
 
 	explosion(target.loc, 0, 0, 0, 0)
@@ -21,9 +21,9 @@
 		if(prob(80))	T.break_tile_to_plating()
 		else			T.break_tile()
 
-	target << "<span class='userdanger'>You're hit by bluespace artillery!</span>"
-	log_admin("[target.name] has been hit by Bluespace Artillery fired by [usr]")
-	message_admins("[target.name] has been hit by Bluespace Artillery fired by [usr]")
+	target << "<span class='userdanger'>¡Disparaste la artilleria Blue Space!</span>"
+	log_admin("[target.name] Ha sido disparado con la artilleria Blue Space por [usr]")
+	message_admins("[target.name] Ha sido disparado con la artilleria Blue Space por [usr]")
 
 	if(target.health <= 1)
 		target.gib()
