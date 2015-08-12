@@ -73,6 +73,6 @@
 
 /proc/log_comment(text)
 	if (config.log_pda)
-		//reusing the PDA option because I really don't think news comments are worth a config option
+		//reusing the PDA option because I really don't think news comments are worth a config options
 		diary << "\[[time_stamp()]]COMMENT: [text]"
 
